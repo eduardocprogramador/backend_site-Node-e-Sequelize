@@ -1,0 +1,17 @@
+require('dotenv').config()
+const express = require('express')
+const cors = require('cors')
+const app = express()
+const conn = require('./db/conn')
+app.use(express.json())
+app.use(cors({credentials: true, origin: process.env.ORIGIN}))
+app.use(express.static('public'))
+const UserRoutes = require('./routes/UserRoutes')
+const EmailRoutes = require('./routes/EmailRoutes')
+app.use('/user', UserRoutes)
+app.use('/email', EmailRoutes)
+conn.sync(/*{force: true}*/).then(() => {
+    app.listen(5000)
+}).catch((error) => {
+    console.log(error)
+})

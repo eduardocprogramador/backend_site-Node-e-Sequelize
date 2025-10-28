@@ -17,7 +17,7 @@ const EmailRoutes = require('./routes/EmailRoutes')
 app.use('/user', UserRoutes)
 app.use('/email', EmailRoutes)
 const PORT = process.env.PORT || 5000
-conn.sync({force: true}).then(() => {
+conn.sync(/*{force: true}*/).then(() => {
   app.listen(PORT)
 }).catch((error) => {
   console.log(error)

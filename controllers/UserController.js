@@ -45,18 +45,11 @@ class UserController {
         }
     }
     static async login(req, res) {
-        const {name, email, password} = req.body
-        const user = await User.findOne({where: {name}})
+        const {email, password} = req.body
+        const user = await User.findOne({where: {email}})
         if(!user){
             res.status(422).json({
-                message: 'Usuário não existe'
-            })
-            return
-        }
-        const emailExists = await User.findOne({where: {email}})
-        if(!emailExists){
-            res.status(422).json({
-                message: 'Email não existe'
+                message: 'Email não cadastrado'
             })
             return
         }

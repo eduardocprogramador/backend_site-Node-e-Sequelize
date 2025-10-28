@@ -69,23 +69,15 @@ class UserController {
         }
     }
     static async check(req, res) {
-        const token = getToken(req)
-        if (!token) {
-            return res.status(401).json({message: "Não autenticado"})
-        }
-        try {
+        let currentUser
+        if (req.headers.authorization) {
+            const token = getToken(req)
             const decoded = jwt.verify(token, process.env.JWT_SECRET) 
-            const user = await User.findOne({where: {id: decoded.id}, attributes: {exclude: ['password']}})
-            if (!user) {
-                return res.status(404).json({message: "Usuário não encontrado"})
-            }
-            return res.status(200).json({user})
-        } catch (error) {
-            if (error.name === "TokenExpiredError") {
-                return res.status(401).json({message: "Token expirado" })
-            }
-            return res.status(401).json({ message: "Token inválido" })
+            currentUser = await User.findByPk(decoded.id, {attributes: {exclude: ['password']}})
+        } else {
+            currentUser = null
         }
+        res.status(200).send(currentUser)
     }
     static async getById(req, res){
         const id = req.params.id

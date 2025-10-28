@@ -6,7 +6,7 @@ const getToken = require('../utils/getToken')
 
 class UserController {
     static async register(req, res) {
-        const {name, password, confirmPassword} = req.body
+        const {name, email, password, confirmPassword} = req.body
         if(password.length < 7){
             res.status(422).json({
                 message: 'Senha muito curta'
@@ -26,10 +26,17 @@ class UserController {
             })
             return 
         }
+        const emailExists = await User.findOne({where: {email}})
+        if(emailExists){
+            res.status(422).json({
+                message: 'Email já em uso'
+            })
+            return 
+        }
         const salt = await bcrypt.genSalt(12)
         const passwordHash = await bcrypt.hash(password, salt)
         try {
-            const newUser = await User.create({name, password: passwordHash})
+            const newUser = await User.create({name, email, password: passwordHash})
             await createUserToken(newUser, 'Usuário criado', req, res)
         } catch (error) {
             res.status(500).json({
@@ -38,11 +45,18 @@ class UserController {
         }
     }
     static async login(req, res) {
-        const {name,password} = req.body
+        const {name, email, password} = req.body
         const user = await User.findOne({where: {name}})
         if(!user){
             res.status(422).json({
                 message: 'Usuário não existe'
+            })
+            return
+        }
+        const emailExists = await User.findOne({where: {email}})
+        if(!emailExists){
+            res.status(422).json({
+                message: 'Email não existe'
             })
             return
         }
@@ -79,6 +93,20 @@ class UserController {
             }
             return res.status(401).json({ message: "Token inválido" })
         }
+    }
+    static async getById(req, res){
+        const id = req.params.id
+        const user = await User.findById(id).select("-password")
+        if(!user){
+            res.status(422).json({
+                message: 'Usuário não existe'
+            })
+            return
+        }
+        res.status(200).json({user})
+    }
+    static async update(req, res){
+
     }
 }
 

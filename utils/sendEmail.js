@@ -14,7 +14,7 @@ const sendEmail = async (formData) => {
     }
   })
   const mailOptions = {
-    from: 'Site',
+    from: `Site <${process.env.EMAIL_USER}>`,
     to: process.env.EMAIL_USER,
     subject: "Mensagem do Site",
     html: `

@@ -81,7 +81,7 @@ class UserController {
     }
     static async getById(req, res){
         const id = req.params.id
-        const user = await User.findById(id).select("-password")
+        const user = await User.findByPk(id, {attributes: {exclude: ['password']}})
         if(!user){
             res.status(422).json({
                 message: 'Usuário não existe'

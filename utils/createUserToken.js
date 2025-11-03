@@ -8,6 +8,7 @@ const createUserToken = async(user, message, req, res) => {
     res.status(200).json({
         message,
         token,
+        user,
         userId: user.id
     })
 }
